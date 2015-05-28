@@ -17,6 +17,7 @@ var config = {
     duplicate: [],
     concatenate: { css: [], js: [] },
     compile: {},
+    uglify: {},
     babel: {
         enabled: true,
         options: {
