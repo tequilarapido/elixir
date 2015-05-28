@@ -60,6 +60,15 @@ var buildTask = function(request) {
       .queueTask(task);
 };
 
+/**
+ * Return minifier options from config
+ * 
+ * @param  {object} request
+ * @return {object}
+ */
+var minifierOptions = function(request) {
+    return request.taskName === 'scripts' ? config.uglify : {};
+}
 
 /**
  * Use Gulp to merge one set of files.
@@ -73,17 +82,11 @@ var mergeFileSet = function (set, request) {
 
     utilities.logTask("Merging", set.files);
 
-
-    var minifierOptions = {};
-    if(request.taskName === 'scripts') {
-      minifierOptions = config.uglify;
-    }
-
     return gulp.src(set.files)
                .pipe(plugins.if(config.sourcemaps, plugins.sourcemaps.init()))
                .pipe(plugins.concat(set.concatFileName))
                .pipe(plugins.if(request.taskName === 'scripts' && config.babel.enabled, babel(config.babel.options)))
-               .pipe(plugins.if(config.production, request.minifier.call(this, minifierOptions)))
+               .pipe(plugins.if(config.production, request.minifier.call(this, minifierOptions(request))))
                .pipe(plugins.if(config.sourcemaps, plugins.sourcemaps.write('.')))
                .pipe(gulp.dest(set.outputDir));
 };
